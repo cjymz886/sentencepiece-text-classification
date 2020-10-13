@@ -16,3 +16,38 @@ numpy <br>
 
 2 数据集及前期处理
 =
+本实验同样是使用THUCNews的一个子集进行训练与测试，数据集请自行到[THUCTC：一个高效的中文文本分类工具包](http://thuctc.thunlp.org/)下载，请遵循数据提供方的开源协议;<br><br>
+文本类别涉及10个类别：categories = \['体育', '财经', '房产', '家居', '教育', '科技', '时尚', '时政', '游戏', '娱乐']，每个分类6500条数据；<br><br>
+cnews.train.txt: 训练集(5000*10)<br>
+cnews.val.txt: 验证集(500*10)<br>
+cnews.test.txt: 测试集(1000*10)<br><br>
+
+其实，本项目是基于词级别的CNN for text classification, 只是这个词一个从jieba切分过来的，一个是sentencepiece训练的模型识别出来的。在预处理过程中，本项目中只是简单的过滤标点符号，数字类型的词，具体code体现在loader.py 文中的 re_han=re.compile(u"([\u4E00-\u9FD5a-zA-Z]+)")。<br><br>
+
+3 超参数说明
+=
+~~~
+class TextConfig():
+
+    embedding_size=100    #dimension of word embedding
+    vocab_size=320000     #number of vocabulary
+
+    seq_length=600        #max length of sentence
+
+    num_filters=128       #number of convolution kernel
+    filter_sizes=[2,3,4]
+    num_classes=10
+    hidden_unit=128
+
+    drop_prob=0.5          #droppout
+    lr= 1e-3               #learning rate
+
+    num_epochs=10          #epochs
+    batch_size=64          #batch_size
+    spm=True               #use sentencepiece
+
+    train_dir='./data/cnews.train.txt'
+    val_dir='./data/cnews.val.txt'
+    test_dir='./data/cnews.test.txt'
+    vocab_dir='./data/vocab.txt'
+~~~
