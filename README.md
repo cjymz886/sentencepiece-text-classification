@@ -58,13 +58,56 @@ class TextConfig():
 **(1) 训练和验证准确率对比**
 | 模型 | train_accuracy | val_accuracy | test_accuracy |
 | ------| ------| ------| ------|
+|jieba+word2vec+cnn|1.000|0.971|0.9723|
 | jieba+cnn| 0.9988 |0.9686|0.9706|
 |spm+cnn|0.9972 |0.9704|0.9667|
 
 **(2) 训练中损失变化对比**
-[](https://github.com/cjymz886/sentencepiece-text-classification/blob/main/imgs/img_loss.png)
+![image](https://github.com/cjymz886/sentencepiece-text-classification/blob/main/imgs/img_loss.png)
 
 从训练结果来看，二者相差并不大，利用spm+cnn在验证集上有一定的提升,但在测试集jieba+cnn表现好一些。通过这些微小数据对比，个人觉得利用sentencepiece相对jieba这类正规分词器来说，更容易过拟合些，换个角度来说，它捕捉的特征更多些，但也带来更多噪声特征的影响。<br><br>
 
+**(3) 载入数据集的消耗时间**
+| 模型 | cost_time(seconds) |
+| ------| ------|
+| jieba+cnn| 475 |
+|spm+cnn|80 |
 
+对比jieba分词器，sentencepiece切分效率是它的近6倍，基于这个优势，是可以看出sentencepiece的使用价值的，尤其当处理的文档级的文本的时候。<br><br>
+
+**(4) 是不是词表越大越好**<br><br>
+在与jieba对比中，我选择的都是8000个高频词，可能有疑问：是不是词表越大效果会越好？对此，本实验在spm+cnn模型下，对比了词表8000,20000,320000(sentencepiece能训练的最大词表)，效果如下：
+![image](https://github.com/cjymz886/sentencepiece-text-classification/blob/main/imgs/img_acc.png)
+
+可以看出，随着词表增大，在验证集的表现越来越差。理论上不是词表越大越好吗，它毕竟降低了未登录词出现的概率。其实，我想是这样的，该新闻数据集的各个label区分度是很高的，也就是说影响每个label的特征都是很明显的，而且这些影响特征都是属于高频词汇的，如果加大词表，就相当于training过程中，让model学到很多label的噪声特征，导致在验证集上效果变小。<br><br>
+
+还有一个原因：该数据集不论基于字，词，或者加上word2vec词向量，它的train_accuracy都很高，如果一个数据集的train_accuracy较低，增加词表应该会有正向的提升。<br><br>
+
+**(4) spm不同词表下切分效果对比**<br><br>
+在训练sentencepiece，可以设定输出词表的大小，本实验训练了8000,20000,320000三个级别的spm model，对比jieba，看看它们切分文本的效果，如下： <br><br>
+| 模型 | text |
+| ------| ------|
+|no_segement|新浪体育讯北京时间4月27日，NBA季后赛首轮洛杉矶湖人主场迎战新奥尔良黄蜂|
+|jieba|新浪\体育讯\北京\时间\4\月\27\日\，\NBA\季后赛\首轮\洛杉矶\湖人\主场\迎战\新奥尔良\黄蜂|
+|spm_8000|\新浪体育讯北京时间\4\月\27\日\,\NBA\季后赛\首\轮\洛杉矶\湖人\主场\迎\战\新\奥\尔\良\黄蜂|
+|spm_20000|\新浪体育讯北京时间\4\月\27\日\,\NBA\季后赛\首轮\洛杉矶湖人\主场迎战\新\奥尔良\黄蜂 |
+|spm_320000|新浪体育讯北京时间\4\月\27\日\,\NBA\季后赛首轮\洛杉矶湖人主场迎战新奥尔良黄蜂 |
+
+对比显示：随着词表增大，spm切分的粒度越来越大；三个spm模型都将“新浪体育讯北京时间”当一个词块，说明语料库中该词库出现的频率很高；在spm_320000模型下，将“洛杉矶湖人主场迎战新奥尔良黄蜂”切在一起，粒度是相当的大，直接是将一句话当成一个词块了。<br><br>
+
+此外，可以看出spm_8000下粒度太细了，很多单字情况，这种情况明显是没有jieba效果好，也就影响了模型的训练，试想：如果在训练spm模型的时候，是不是可以限定下词的长度，只要长度2以上的高频词汇，是不是再去词token化效果会好些。<br><br>
+
+我之前也尝试：让jieba先切分下，形成列表，然后再用sentencepiece去训练，这样二者就有种互补的效果，一来减少jieba因为词库的原因导致很多高频词组切开的影响，二来可利用sentencepiece的切分效率。但在实际操作中，并没有实现，不知道是对开源的sentencepiece工具没搞清楚，还是它本事就有这个问题，现在也没解决。若有兴趣，可与我私下交流研究下。<br><br>
+
+5 结语
+=
+现在很多任务都在基于字符级来解决的，因为像开源的预训练模型(BERT,ALBERT等)都是基于字级别的，
+
+9 参考
+=
+1. [Text classification with CNN and Word2vec](https://github.com/cjymz886/text-cnn)
+2. [sentencepiece原理与实践](https://zhuanlan.zhihu.com/p/159200073)
+3. [SentencePiece](https://github.com/google/sentencepiece)
+
+![image](https://github.com/cjymz886/sentence-similarity/blob/master/images/%E8%87%AA%E7%84%B6%E8%AF%AD%E8%A8%80%E5%A4%84%E7%90%86%E7%AE%97%E6%B3%95%E4%B8%8E%E5%AE%9E%E8%B7%B5.png)<br>
 
