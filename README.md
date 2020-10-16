@@ -99,17 +99,21 @@ class TextConfig():
 
 此外，可以看出spm_8000下粒度太细了，很多单字情况，这种情况明显是没有jieba效果好，也就影响了模型的训练，试想：如果在训练spm模型的时候，是不是可以限定下词的长度，只要长度2以上的高频词汇，是不是再去词token化效果会好些。<br><br>
 
-**我之前也尝试：让jieba先切分下，形成词列表，然后再用sentencepiece去训练，这样二者就有种互补的效果，一来减少jieba因为词库的原因导致很多高频词组切开的影响，二来可利用sentencepiece的切分效率。但在实际操作中，并没有实现，不知道是对开源的sentencepiece工具没搞清楚，还是它本事就有这个问题。之前也有朋友遇到同样的问题，也与他探讨过，当目前还是没解决...**
+**我之前也尝试：让jieba先切分下，形成词列表，然后再用sentencepiece去训练，这样二者就有种互补的效果，一来减少jieba因为词库的原因导致很多高频词组切开的影响，二来可利用sentencepiece的切分效率。但在实际操作中，并没有实现，不知道是对开源的sentencepiece工具没搞清楚，还是它本事就有这个问题。之前也有朋友遇到同样的问题，也与他探讨过，当目前还是没解决...**<br><br>
 
 5 结语
 =
-利用sentencpiece代替分词器进行下游任务，是完全可行的，一来它与正规分词器对比效果是相当的，二来它的切分效率很高，可降低模型在token化消耗的时间，这对在工业上应用是合适的。只是在使用过程中，可调式下词表大小，不宜过高，但也要具体场景具体对比看下，是否有必要把词表加大。此外，如果在领域性很强的任务时，或者在做multi-label任务时，我想sentencpiece带来的效果应该更明显。当然，上述提到的问题，若能解决，会让sentencpiece在中文处理上更有价值。对此感兴趣的朋友，若有啥问题，可与我私下交流~
+利用sentencpiece代替分词器进行下游任务，是完全可行的，一来它与正规分词器对比效果是相当的，二来它的切分效率很高，可降低模型在token化消耗的时间，这对在工业上应用是合适的。只是在使用过程中，可调式下词表大小，不宜过高，但也要具体场景具体对比看下，是否有必要把词表加大。此外，如果在领域性很强的任务时，或者在做multi-label任务时，我想sentencpiece带来的效果应该更明显。当然，上述提到的问题，若能解决，会让sentencpiece在中文处理上更有价值。对此感兴趣的朋友，若有啥问题，可与我私下交流~<br><br>
 
-9 参考
+6 参考
 =
 1. [Text classification with CNN and Word2vec](https://github.com/cjymz886/text-cnn)
 2. [sentencepiece原理与实践](https://zhuanlan.zhihu.com/p/159200073)
 3. [SentencePiece](https://github.com/google/sentencepiece)
 
+
+
+<br><br>
+<br><br>
 ![image](https://github.com/cjymz886/sentence-similarity/blob/master/images/%E8%87%AA%E7%84%B6%E8%AF%AD%E8%A8%80%E5%A4%84%E7%90%86%E7%AE%97%E6%B3%95%E4%B8%8E%E5%AE%9E%E8%B7%B5.png)<br>
 
