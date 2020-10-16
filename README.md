@@ -55,8 +55,11 @@ class TextConfig():
 
 4 实验对比
 =
-(1) 训练结果
-| 模型 | test_loss | test_accuracy |
-| ------| ------| ------ |
-| single kernel(之前)| 0.573 |  0.833|
-|multi kernel(本次)|0.505|0.888|
+**(1) 训练和验证准确率对比**
+| 模型 | train_accuracy | val_accuracy |test_accuracy|
+| ------| ------| ------ | ------ |
+| jieba+cnn| 0.9988 |  0.9686|0.9706|
+|spm+cnn|0.9972 |0.9704||
+从训练结果来看，二者相差并不大，利用sentencepiece在验证集上有一定的提升
+
+**(2) 训练中损失变化对比**
