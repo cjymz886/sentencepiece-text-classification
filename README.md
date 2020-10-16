@@ -30,7 +30,7 @@ cnews.test.txt: 测试集(1000*10)<br><br>
 class TextConfig():
 
     embedding_size=100    #dimension of word embedding
-    vocab_size=320000     #number of vocabulary
+    vocab_size=8000     #number of vocabulary
 
     seq_length=600        #max length of sentence
 
@@ -51,3 +51,12 @@ class TextConfig():
     test_dir='./data/cnews.test.txt'
     vocab_dir='./data/vocab.txt'
 ~~~
+在与jieba对比的时，设定的vocab_size=8000,spm参数控制是否use sentencepiece，其他参数都是一致的；vocab.txt是用jieba切分后前8000的高频词；<br><br>
+
+4 实验对比
+=
+(1) 训练结果
+| 模型 | test_loss | test_accuracy |
+| ------| ------| ------ |
+| single kernel(之前)| 0.573 |  0.833|
+|multi kernel(本次)|0.505|0.888|
