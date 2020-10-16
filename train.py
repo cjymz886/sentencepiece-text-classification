@@ -25,7 +25,7 @@ def train():
     reduce_lr = ReduceLROnPlateau(monitor='val_loss',factor=0.9, patience=1, min_lr=0.00001)
     history=model.fit(train_x,train_y,epochs=cfg.num_epochs,batch_size=cfg.batch_size,
                       verbose=1,validation_data=(val_x,val_y), callbacks=[reduce_lr],)
-    model.save('./model_dir/text_cnn.h5')
+    model.save('./model_dir/text_cnn_spm.h5')
 
     with open('./model_dir/history.pickle', 'wb') as f:
         pickle.dump(history.history, f)
